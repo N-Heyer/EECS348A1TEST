@@ -18,7 +18,7 @@ class Email:
         self.subject = subject.strip()
         self.date = date.strip()
         self.arrival_order = arrival_order
-        self.priority = (self.PRIORITY_MAP.get(self.sender_category, 0), -arrival_order)  # Negative arrival_order for newest first
+        self.priority = (self.PRIORITY_MAP.get(self.sender_category, 0), -arrival_order)  # Higher priority first, newest emails first
 
     def __lt__(self, other):
         """Custom comparison for max-heap behavior."""
@@ -44,24 +44,23 @@ def main():
                 if not line:
                     continue  # Skip empty lines
                 
-                parts = line.split(",", maxsplit=2)  # Split into command, sender, subject+date
-                
-                command = parts[0].strip().upper()  # Convert command to uppercase for case-insensitive checking
-                
+                parts = line.split(" ", 1)  # Split into command and the rest
+                command = parts[0].strip().upper()
+
                 try:
                     if command == "EMAIL":
-                        if len(parts) < 3:
+                        if len(parts) < 2:
                             print(f"\nInvalid EMAIL format: {line}\n")
                             continue
-                        sender_category = parts[1].strip()
-                        subject_and_date = parts[2].rsplit(",", maxsplit=1)  # Separate last comma for date
-
-                        if len(subject_and_date) != 2:
+                        
+                        email_data = parts[1].split(",")  # Split sender, subject, date
+                        if len(email_data) != 3:
                             print(f"\nInvalid EMAIL format: {line}\n")
                             continue
-
-                        subject = subject_and_date[0].strip()
-                        date = subject_and_date[1].strip()
+                        
+                        sender_category = email_data[0].strip()
+                        subject = email_data[1].strip()
+                        date = email_data[2].strip()
 
                         email = Email(sender_category, subject, date, arrival_counter)
                         email_queue.add(email)
