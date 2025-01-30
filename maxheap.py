@@ -93,4 +93,4 @@ class MaxHeap:
         '''
         Return the count of items in list.
         '''
-        return len(self.heap)s
+        return len(self.heap)
